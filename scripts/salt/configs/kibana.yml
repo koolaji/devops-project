@@ -1,0 +1,2 @@
+server.host: "{{pillar['ip_address'][pillar['elk_master_config']['master_nodename']]}}"
+elasticsearch.hosts: ["http://{{pillar['ip_address'][pillar['elk_master_config']['master_nodename']]}}:9200"]

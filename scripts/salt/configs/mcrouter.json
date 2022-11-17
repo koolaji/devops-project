@@ -1,0 +1,27 @@
+{% set port = '11211'%}
+{% set servers = [] %}
+{% for node in pillar['node_def']['memcache']  %}
+{% do  servers.append(pillar['ip_address'][node])  %}
+{% endfor %}
+{% set dis_server =  servers | join(':'+port+'","')   %}
+
+
+{
+  "pools": {
+    "A": {
+      "servers": [
+"{{ dis_server }}:{{port}}" 
+      ]
+    }
+  },
+  "route": {
+    "type": "OperationSelectorRoute",
+    "operation_policies": {
+      "add": "AllSyncRoute|Pool|A",
+      "delete": "AllSyncRoute|Pool|A",
+      "get": "FailoverRoute|Pool|A",
+      "set": "AllSyncRoute|Pool|A"
+    }
+  }
+}
+

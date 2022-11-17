@@ -1,0 +1,32 @@
+{%- set nodename = pillar['nodename'] %}
+[Exec]
+PrivateUsers=no
+[Network]
+
+{% if nodename.endswith('-elk') or nodename.endswith('-redis')  %}
+VirtualEthernet=no
+{% else  %}
+VirtualEthernet=yes
+{% endif %}
+{% if nodename.endswith('-mcrouter') %}
+Port=tcp:31213:31213
+{% elif nodename.endswith('-web') %}
+Port=tcp:80:80
+{% elif nodename.endswith('-memcache') %}
+Port=tcp:11211:11211
+{% elif nodename.endswith('-mysql') %}
+Port=tcp:3306:3306
+Port=tcp:4444:4444
+Port=tcp:4567:4567
+Port=tcp:4568:4568
+{% endif %}
+{% if nodename.endswith('-mysql') %}
+[Files]
+Bind=/var/lib/mysql
+{% endif %}
+{% if nodename.endswith('-elk') %}
+[Files]
+Bind=/var/lib/elasticsearch
+[Service]
+DeviceAllow=/sys rwm
+{% endif %}

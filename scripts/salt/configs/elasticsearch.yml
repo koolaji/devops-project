@@ -1,0 +1,16 @@
+{%- set nodename = pillar['nodename'] %}
+cluster.name: {{pillar['elk_master_config']['cluster_name']}}
+node.name: {{grains['nodename'] }}
+network.host: {{ pillar['ip_address'][grains['nodename'].split('-')[0]] }}
+path.data: /var/lib/elasticsearch
+path.logs: /var/lib/elasticsearch
+http.port: 9200
+{% set discovery_servers = [] %}
+{% for node in pillar['node_def']['elk']  %}
+{% do  discovery_servers.append(node+'-elk')  %}
+{% endfor %}
+{% set dis_serv =  discovery_servers | join('","')   %}
+
+discovery.seed_hosts: ["{{ dis_serv }}"]
+
+cluster.initial_master_nodes: ["{{pillar['elk_master_config']['master_nodename']}}-elk"]
